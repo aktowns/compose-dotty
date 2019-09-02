@@ -11,4 +11,4 @@ trait Monad[F[_]] extends Applicative[F]:
   override def (f: F[A => B]) <*> [A, B] (fa: F[A]): F[B] = f >>= map(fa)
 
   /** Same as >>=, but with the arguments interchanged. */
-  def (f: A => F[B]) =<< [A, B] (x: F[A]) = x >>= f
+  def (f: A => F[B]) =<< [A, B] (x: F[A])                 = x >>= f

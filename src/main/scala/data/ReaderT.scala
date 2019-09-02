@@ -8,6 +8,9 @@ object ReaderT:
   def ask[R, M[_]] given (m: Monad[M]): ReaderT[R, M, R] = 
     ReaderT(m.pure)
 
+  def (fa: G[A]) lift [R, G[_]: Monad, A]: ReaderT[R, G, A] =
+    ReaderTMonadTrans[R].lift(fa)
+
 type Reader[R, A] = ReaderT[R, Identity, A]
 
 given ReaderTMonad[R, M[_]] as Monad[[A] =>> ReaderT[R, M, A]] given (mon: Monad[M]):

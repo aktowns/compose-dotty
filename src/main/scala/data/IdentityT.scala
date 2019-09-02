@@ -24,8 +24,8 @@ given IdentityTMonad[M[_]] as Monad[[A] =>> IdentityT[M, A]] given (mon: Monad[M
 
   def pure[A](a: A): IdentityT[M, A] = IdentityT(mon.pure(a))
 
-given IdentityTMonadTrans as MonadTrans[IdentityT]:
-  def (fa: G[A]) lift [G[_]: Monad, A]: IdentityT[G, A] = IdentityT(fa)
-
-  def apply[G[_]: Monad]: Monad[[A] =>> IdentityT[G, A]] = 
-    IdentityTMonad[G]
+// given IdentityTMonadTrans as MonadTrans[IdentityT]:
+//   def (fa: G[A]) lift [G[_]: Monad, A]: IdentityT[G, A] = IdentityT(fa)
+// 
+//   def apply[G[_]: Monad]: Monad[[A] =>> IdentityT[G, A]] = 
+//     IdentityTMonad[G]

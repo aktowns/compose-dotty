@@ -5,22 +5,36 @@ import given instance._
 import given data._
 
 case class Config (magic: Int)
-type AppError[A] = Either[String, A]
-type MyStack[A]  = ReaderT[Config, AppError, A]
+case class AppState (bump: Int)
 
-given [A] as Monad[MyStack] = ReaderTMonad[Config, AppError]
-given as Monad[AppError]    = EitherRightBiasedMonad[String]
+type AppError[A] = Either[String, A]
+type ReaderStack[A]  = ReaderT[Config, AppError, A]
+type MyStack[A] = StateT[AppState, ReaderStack, A]
+
+given [A] as Monad[ReaderStack] = ReaderTMonad[Config, AppError]
+given [A] as Monad[MyStack] = StateTMonad[AppState, ReaderStack]
 
 def throwError[A](s: String): AppError[A] = Left(s)
 
 def readValue(i: Int): MyStack[Int] = the[Monad[MyStack]].pure(3)
 
-throwError("oh no").lift.lift.lift.lift.lift
+def increment(): MyStack[Unit] = 
+  StateT.modify(s => AppState(s.bump + 1))
 
-val program = for
-  y <- ReaderT.ask[Config, AppError]
-  x <- readValue(1)
-  z <- throwError("oh no").lift
-yield y.magic + x
+val program: MyStack[Int] = for
+  //_ <- ReaderT.ask.lift
+  y <- StateT.lift(ReaderT.ask[Config, AppError])
 
-program.runReaderT(Config(39))
+  initialState <- readValue(1)
+  _ <- StateT.put[AppState, ReaderStack](AppState(initialState))
+
+  _ <- increment()
+  _ <- increment()
+  _ <- increment()
+
+  newState <- StateT.get[AppState, ReaderStack]
+ // z <- StateT.lift(ReaderT.lift(throwError(s"oh no: $y")))
+yield y.magic + newState.bump
+
+
+program.runStateT(AppState(0)).runReaderT(Config(39))
