@@ -17,7 +17,8 @@ trait Applicative[F[_]] extends Functor[F]:
   def (f: F[A => B]) ap [A, B] (fa: F[A]): F[B] = f <*> fa
 
   /** Lift a binary function to actions. */
-  def (f: A => (B => C)) liftA2 [A, B, C] (fa: F[A]) (fb: F[B]): F[C] = f <#> fa <*> fb
+  def (f: A => (B => C)) liftA2 [A, B, C] (fa: => F[A]) (fb: => F[B]): F[C] = f <#> fa <*> fb
+
   /** Sequence actions, discarding the value of the first argument. */
   def (fa: F[A]) *> [A, B] (fb: F[B]): F[B]                           = (identity[B] <# fa) <*> fb
   /** Sequence actions, discarding the value of the second argument. */

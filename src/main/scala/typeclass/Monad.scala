@@ -12,3 +12,8 @@ trait Monad[F[_]] extends Applicative[F]:
 
   /** Same as >>=, but with the arguments interchanged. */
   def (f: A => F[B]) =<< [A, B] (x: F[A])                 = x >>= f
+  /** Sequentially compose two actions, discarding any value produced by the first */
+  def (fa: => F[A]) >> [A, B] (fb: => F[B]): F[B]               = fa >>= (_ => fb)
+
+object Monad:
+  def apply[T[_]] given Monad[T] = the[Monad[T]]

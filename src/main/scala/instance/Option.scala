@@ -9,7 +9,7 @@ given OptionFunctor as Functor[Option]:
 given OptionApplicative as Applicative[Option] = OptionAlternative
     
 given OptionAlternative as Alternative[Option]:
-  def (fa: Option[A]) <|> [A] (fb: Option[A]) =
+  def (fa: => Option[A]) <|> [A] (fb: => Option[A]) =
     (fa, fb) match
       case (None, r) => r
       case (l, _) => l
