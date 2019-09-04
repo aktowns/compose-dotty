@@ -1,8 +1,9 @@
-import typeclass._
-import data._
+import tinyfp.typeclass._
+import tinyfp.data._
+import tinyfp.transformers._
 
-import given instance._
-import given data._
+import given tinyfp.instance._
+import given tinyfp.data._
 
 case class Config (magic: Int)
 case class AppState (bump: Int)
