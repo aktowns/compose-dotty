@@ -21,5 +21,6 @@ given ListAlternative as Alternative[List]:
   def empty[A] = List[A]()
 
   // Applicative
-  def (f: List[A => B]) <*> [A, B] (fa: List[A]): List[B] = fa.map(x => f.map(y => y(x))).flatten
-  def pure[A](a: A): List[A] = List(a)
+  def (f: => List[A => B]) <*> [A, B] (fa: => List[A]): List[B] = 
+    fa.map(x => f.map(y => y(x))).flatten
+  def pure[A](a: => A): List[A] = List(a)

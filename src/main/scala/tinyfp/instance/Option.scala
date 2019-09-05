@@ -13,16 +13,16 @@ given OptionAlternative as Alternative[Option]:
     (fa, fb) match
       case (None, r) => r
       case (l, _) => l
+
   def empty[A] = None
 
   // Applicative
-  def (f: Option[A => B]) <*> [A, B] (fa: Option[A]): Option[B] = 
+  def (f: => Option[A => B]) <*> [A, B] (fa: => Option[A]): Option[B] = 
     (f, fa) match
       case (Some(ff), ffa) => ff <#> ffa
       case (None, _)       => None
 
-    fa.map(x => f.map(y => y(x))).flatten
-  def pure[A](a: A): Option[A] = Some(a)
+  def pure[A](a: => A): Option[A] = Some(a)
 
 given OptionMonad as Monad[Option]:
   def (fa: Option[A]) >>= [A, B] (f: A => Option[B]): Option[B] =
@@ -30,7 +30,7 @@ given OptionMonad as Monad[Option]:
       case Some(a) => f(a)
       case None => None
 
-  override def pure[A](a: A): Option[A] = Some(a)
+  override def pure[A](a: => A): Option[A] = Some(a)
 
 
 

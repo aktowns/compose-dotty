@@ -22,7 +22,7 @@ given ReaderTMonad[R, M[_]] as Monad[[A] =>> ReaderT[R, M, A]] given (mon: Monad
       }
     )
 
-  def pure[A](a: A): ReaderT[R, M, A] = ReaderT(r => mon.pure(a))
+  def pure[A](a: => A): ReaderT[R, M, A] = ReaderT(r => mon.pure(a))
 
 given ReaderTMonadTrans[R] as MonadTrans[[M[_], A] =>> ReaderT[R, M, A]]: 
   def (fa: G[A]) lift [G[_]: Monad, A]: ReaderT[R, G, A] =

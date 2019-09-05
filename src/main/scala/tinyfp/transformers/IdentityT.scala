@@ -13,16 +13,16 @@ given IdentityTFunctor[M[_]] as Functor[[A] =>> IdentityT[M, A]] given (fun: Fun
     IdentityT(fa.runIdentityT.map(f))
 
 given IdentityTApplicative[M[_]] as Applicative[[A] =>> IdentityT[M, A]] given (app: Applicative[M]):
-  def (f: IdentityT[M, A => B]) <*> [A, B] (fa: IdentityT[M, A]): IdentityT[M, B] =
+  def (f: => IdentityT[M, A => B]) <*> [A, B] (fa: => IdentityT[M, A]): IdentityT[M, B] =
     IdentityT(app.ap(f.runIdentityT)(fa.runIdentityT))
 
-  def pure[A](a: A): IdentityT[M, A] = IdentityT(app.pure(a))
+  def pure[A](a: => A): IdentityT[M, A] = IdentityT(app.pure(a))
 
 given IdentityTMonad[M[_]] as Monad[[A] =>> IdentityT[M, A]] given (mon: Monad[M]):
   def (x: IdentityT[M, A]) >>= [A, B] (f: A => IdentityT[M, B]): IdentityT[M, B] =
     IdentityT(mon.flatMap(x.runIdentityT)(f.andThen(_.runIdentityT)))
 
-  def pure[A](a: A): IdentityT[M, A] = IdentityT(mon.pure(a))
+  def pure[A](a: => A): IdentityT[M, A] = IdentityT(mon.pure(a))
 
 // given IdentityTMonadTrans as MonadTrans[IdentityT]:
 //   def (fa: G[A]) lift [G[_]: Monad, A]: IdentityT[G, A] = IdentityT(fa)

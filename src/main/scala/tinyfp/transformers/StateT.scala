@@ -31,7 +31,7 @@ given StateTMonad[S, M[_]] as Monad[[A] =>> StateT[S, M, A]] given (mon: Monad[M
       }
     )
 
-  def pure[A](a: A): StateT[S, M, A] = StateT(s => mon.pure((a, s)))
+  def pure[A](a: => A): StateT[S, M, A] = StateT(s => mon.pure((a, s)))
 
 given StateTMonadTrans[S] as MonadTrans[[M[_], A] =>> StateT[S, M, A]]: 
   def (fa: G[A]) lift [G[_], A] given (m: Monad[G]): StateT[S, G, A] =

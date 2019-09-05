@@ -7,14 +7,14 @@ package tinyfp.typeclass
  */
 trait Applicative[F[_]] extends Functor[F]:
   /** Sequential application. */
-  def (f: F[A => B]) <*> [A, B] (fa: F[A]): F[B]
+  def (f: => F[A => B]) <*> [A, B] (fa: => F[A]): F[B]
   /** Lift a value. */
-  def pure[A](a: A): F[A]
+  def pure[A](a: => A): F[A]
 
   /** @see [[Functor.map]] */
   override def (fa: F[A]) map [A, B] (f: A => B): F[B]                = pure(f) <*> fa
 
-  def (f: F[A => B]) ap [A, B] (fa: F[A]): F[B] = f <*> fa
+  def (f: => F[A => B]) ap [A, B] (fa: => F[A]): F[B] = f <*> fa
 
   /** Lift a binary function to actions. */
   def (f: A => (B => C)) liftA2 [A, B, C] (fa: => F[A]) (fb: => F[B]): F[C] = f <#> fa <*> fb

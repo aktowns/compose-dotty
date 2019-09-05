@@ -20,10 +20,6 @@ lazy val root = project
     ),
 
     libraryDependencies ++= Seq(
-      "com.novocode" % "junit-interface" % "0.11" % "test",
-    ),
-
-    libraryDependencies ++= Seq(
       "hedgehog" %% "hedgehog-core" % hedgehogVersion,
       "hedgehog" %% "hedgehog-runner" % hedgehogVersion,
       "hedgehog" %% "hedgehog-sbt" % hedgehogVersion

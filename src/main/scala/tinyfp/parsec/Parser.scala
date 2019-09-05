@@ -21,17 +21,17 @@ given ParserFunctor as Functor[Parser]:
     Parser((s: Seq[Char]) => fa.parse(s).map((a, b) => (f(a), b)))
 
 given ParserApplicative as Applicative[Parser]:
-  def (fa: Parser[A => B]) <*> [A, B] (fb: Parser[A]): Parser[B] =
+  def (fa: => Parser[A => B]) <*> [A, B] (fb: => Parser[A]): Parser[B] =
     Parser((s: Seq[Char]) => fa.parse(s).flatMap { (f: A => B, s1: Seq[Char]) =>
       fb.parse(s1).map((a: A, s2: Seq[Char]) => (f(a), s2))
     })
-  def pure[A](v: A): Parser[A] = Parser((s) => List((v, s)))
+  def pure[A](v: => A): Parser[A] = Parser((s) => List((v, s)))
 
 given ParserMonad as Monad[Parser] given (f: Applicative[Parser]):
   def (fa: Parser[A]) >>= [A, B] (f: A => Parser[B]): Parser[B] =
     Parser(s => fa.parse(s).concatMap((a: A, ss: Seq[Char]) => f(a).parse(ss)))
 
-  def pure[A](v: A): Parser[A] = f.pure(v)
+  def pure[A](v: => A): Parser[A] = f.pure(v)
 
 given ParserAlternative as Alternative[Parser] given (f: Applicative[Parser]):
   def (fa: => Parser[A]) <|> [A] (fb: => Parser[A]): Parser[A] = 
@@ -42,8 +42,8 @@ given ParserAlternative as Alternative[Parser] given (f: Applicative[Parser]):
     }
   def empty[A]: Parser[A] = failure
 
-  def (fa: Parser[A => B]) <*> [A, B] (fb: Parser[A]): Parser[B] = f.ap(fa)(fb)
-  def pure[A](v: A): Parser[A] = f.pure(v)
+  def (fa: => Parser[A => B]) <*> [A, B] (fb: => Parser[A]): Parser[B] = f.ap(fa)(fb)
+  def pure[A](v: => A): Parser[A] = f.pure(v)
 
 
 def runParser[A](m: Parser[A], s: String): A =

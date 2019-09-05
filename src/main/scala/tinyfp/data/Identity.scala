@@ -16,13 +16,13 @@ given IdentityFunctor as Functor[Identity]:
     Identity(f(fa.runIdentity))
 
 given IdentityApplicative as Applicative[Identity]:
-  def (f: Identity[A => B]) <*> [A, B] (fa: Identity[A]): Identity[B] =
+  def (f: => Identity[A => B]) <*> [A, B] (fa: => Identity[A]): Identity[B] =
     Identity(f.runIdentity(fa.runIdentity))
 
-  def pure[A](a: A): Identity[A] = Identity(a)
+  def pure[A](a: => A): Identity[A] = Identity(a)
 
 given IdentityMonad as Monad[Identity]:
   def (x: Identity[A]) >>= [A, B] (f: A => Identity[B]): Identity[B] =
     f(x.runIdentity)
 
-  def pure[A](a: A): Identity[A] = Identity(a)
+  def pure[A](a: => A): Identity[A] = Identity(a)
