@@ -1,4 +1,6 @@
-val dottyVersion = "0.18.1-RC1"
+val dottyVersion = "0.19.1-bin-20190904-beba63a-NIGHTLY"
+
+val hedgehogVersion = "49859b13f023a70937c6e4ee9770fb84f63bdcc5"
 
 lazy val root = project
   .in(file("."))
@@ -8,10 +10,24 @@ lazy val root = project
 
     scalaVersion := dottyVersion,
 
+    resolvers += Resolver.url("bintray-scala-hedgehog",
+        url("https://dl.bintray.com/hedgehogqa/scala-hedgehog")
+      )(Resolver.ivyStylePatterns),
+
     scalacOptions ++= Seq(
       "-feature",
       "-language:higherKinds,existentials", 
     ),
 
-    libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test"
+    libraryDependencies ++= Seq(
+      "com.novocode" % "junit-interface" % "0.11" % "test",
+    ),
+
+    libraryDependencies ++= Seq(
+      "hedgehog" %% "hedgehog-core" % hedgehogVersion,
+      "hedgehog" %% "hedgehog-runner" % hedgehogVersion,
+      "hedgehog" %% "hedgehog-sbt" % hedgehogVersion
+    ).map(_.withDottyCompat(scalaVersion.value)),
+
+    testFrameworks += TestFramework("hedgehog.sbt.Framework")
   )

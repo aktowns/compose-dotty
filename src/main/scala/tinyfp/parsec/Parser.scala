@@ -10,9 +10,11 @@ case class ParseError()
 case class Parser[A](parse: Seq[Char] => List[(A, Seq[Char])])
 
 def tap[A](m: String, v: => A): A =
-  println(s"$m: $v")
+  println(s"$m")
+  val x = v
   Console.flush()
-  v
+  println(s"end $m")
+  x
 
 given ParserFunctor as Functor[Parser]:
   def (fa: Parser[A]) map [A, B] (f: A => B): Parser[B] = 
@@ -62,8 +64,12 @@ def combine[A](p: Parser[A], q: Parser[A]): Parser[A] =
 def failure[A]: Parser[A] = Parser(_ => List())
 
 def satisfy(p: Char => Boolean): Parser[Char] = item >>= { (c: Char) => 
-  if (p(c)) { Monad[Parser].pure(c) } 
-  else { Parser(cs => List()) }
+  if (p(c)) { 
+    tap(s"consuming: $c", Monad[Parser].pure(c))
+  } 
+  else { 
+    tap(s"satisify failed for $c", Parser(cs => List()))
+  }
 }
 
 def oneOf(s: String): Parser[Char] = 

@@ -15,7 +15,7 @@ trait Foldable[T[_]]:
   /** Map a function over all the elements of a container and concatenate 
     the resulting lists. */
   def (t: T[A]) concatMap [A, B] (f: A => List[B]): List[B] = 
-    foldr(t)(List())((a) => (b) => f(a) ++ b)
+    foldr(t)(List[B]())((a) => (b) => f(a) ++ b)
 
 object Foldable:
   def apply[T[_]] given Foldable[T] = the[Foldable[T]]

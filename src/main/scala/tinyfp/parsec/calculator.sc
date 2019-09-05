@@ -28,28 +28,25 @@ object grmr:
   import Expr._
 
   def int: Parser[Expr] = 
-    tap("int", number.flatMap{n => 
-      tap("int-inner", n)
-      Monad[Parser].pure(Lit(n))
-    })
+    number.flatMap{n => Monad[Parser].pure(Lit(n)) }
   
   def infixOp[A](x: String)(f: A => A => A): Parser[A => A => A] = 
-    reserved(x) >> tap(s"consumed infix: $x", Monad[Parser].pure(f))
+    tap(s"infixOp: $x", reserved(x) >> Monad[Parser].pure(f))
   
   def mulop: Parser[Expr => Expr => Expr] = 
-    infixOp("*")(Mul.apply.curried)
+    tap("mulop", infixOp("*")(Mul.apply.curried))
   
   def addop: Parser[Expr => Expr => Expr] = 
-    infixOp("+")(Add.apply.curried) <|> infixOp("-")(Sub.apply.curried)
+    tap("addop", infixOp("+")(Add.apply.curried) <|> infixOp("-")(Sub.apply.curried))
 
-  def expr: Parser[Expr] = 
-    chainl1(term)(addop)
+  def expr: Parser[Expr] =
+    tap("expr", chainl1(term)(addop))
   
   def factor: Parser[Expr] = 
-    int <|> parens(expr)
+    tap("factor", int <|> parens(expr))
   
   def term: Parser[Expr] = 
-    chainl1(factor)(mulop)
+    tap("term", chainl1(factor)(mulop))
 
 def run(s: String): Expr =
   runParser(grmr.expr, s)
