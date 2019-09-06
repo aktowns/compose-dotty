@@ -1,3 +1,5 @@
+package tinyfp.laws
+
 import hedgehog._
 import hedgehog.runner._
 
