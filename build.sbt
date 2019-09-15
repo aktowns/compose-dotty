@@ -1,4 +1,4 @@
-val dottyVersion = "0.19.1-bin-20190904-beba63a-NIGHTLY"
+val dottyVersion = "0.19.0-bin-20190911-fba8e4f-NIGHTLY"
 
 val hedgehogVersion = "49859b13f023a70937c6e4ee9770fb84f63bdcc5"
 
