@@ -1,6 +1,7 @@
 /* Classgen.scala
+ * Ashley Towns <mail@ashleytowns.id.au>
  *
- * This file serves as a DSL for generating java class files.
+ * This file serves as a DSL and a weak syntax tree for generating java class files.
  *
  * Aims for SE12 of the specification compatability
  *
@@ -487,13 +488,40 @@ given as BinaryWriter[ClassFormat]:
               .put(k.methods.decode)
              )
 
-// Write out a hello world
+/* Just some helpers for recalcing the sizes */
+def recalculateMethodInfo(x: MethodInfo): MethodInfo =
+  println(s"attributesCount: ${x.attributesCount} ~ ${x.attributes.length}")
+  x.copy(attributesCount = x.attributes.length.toShort,
+         attributes = x.attributes.map(recalculateAttributeInfoSizes)
+        )
+
+def recalculateAttributeInfoSizes(x: AttributeInfo): AttributeInfo =
+  x match
+    case y: AttributeInfo.Code => 
+      println(s"attributeLength: ${y.attributeLength} ~ ${y.sizeOf - 6}")
+      println(s"codeLength: ${y.codeLength} ~ ${y.code.sizeOf}")
+      y.copy(attributeLength = y.sizeOf - 6 /* proceeding header doesn't count */,
+             codeLength = y.code.sizeOf
+            )
+
+def recalculateClassFormatSizes(x: ClassFormat): ClassFormat = 
+  println(s"interfaceCount: ${x.interfaceCount} ~ ${x.interfaces.length}")
+  println(s"methodsCount: ${x.methodsCount} ~ ${x.methods.length}")
+  println(s"fieldsCount: ${x.fieldsCount} ~ ${x.fields.length}")
+  println(s"attributesCount: ${x.attributesCount} ~ ${x.attributes.length}")
+  x.copy(interfaceCount = x.interfaces.length.toShort,
+         methodsCount = x.methods.length.toShort,
+         methods = x.methods.map(recalculateMethodInfo),
+         fieldsCount = x.fields.length.toShort,
+         attributesCount = x.attributes.length.toShort
+        )
 
 def utf8Str(str: String): Constants =
   Constants.Utf8String(str.length.toShort, str.toCharArray.toList.map(_.toByte))
 
 def bs: Bitset[ClassAccessFlag] = Bitset(ClassAccessFlag.Public)
 
+// Write out a hello world
 def helloworld: ClassFormat =
   val constants = List(
 /*1 */utf8Str("HelloWorld"),
@@ -569,7 +597,7 @@ def helloworld: ClassFormat =
               )
   )
 
-  ClassFormat(constantPool = constants, 
+  val cf = ClassFormat(constantPool = constants, 
               constantPoolCount = (constants.length + 1).toShort,
               accessFlags = Bitset(ClassAccessFlag.Public),
               thisClass = 2,
@@ -583,3 +611,4 @@ def helloworld: ClassFormat =
               attributesCount = 0, 
               attributes = List()
              )
+  recalculateClassFormatSizes(cf)
