@@ -519,7 +519,6 @@ def recalculateClassFormatSizes(x: ClassFormat): ClassFormat =
 def utf8Str(str: String): Constants =
   Constants.Utf8String(str.length.toShort, str.toCharArray.toList.map(_.toByte))
 
-def bs: Bitset[ClassAccessFlag] = Bitset(ClassAccessFlag.Public)
 
 // Write out a hello world
 def helloworld: ClassFormat =

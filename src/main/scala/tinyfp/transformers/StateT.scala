@@ -2,6 +2,7 @@ package tinyfp.transformers
 
 import tinyfp.typeclass._
 import tinyfp.data.Identity
+import given tinyfp.data._
 
 case class StateT[S, F[_], A](runStateT: S => F[(A, S)])
 
