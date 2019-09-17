@@ -9,6 +9,7 @@ trait Functor[F[_]]:
   def (ff: A => B) <#> [A, B] (fa: F[A]): F[B] = fa.map(ff)
   /** Replace all locations in the input with the same value. */
   def (a: A) <# [A, B] (fb: F[B]): F[A] = fb.map(_ => a)
+  def (fa: F[A]) #> [A, B] (b: B): F[B] = fa.map(_ => b)
 
 object Functor:
   def apply[T[_]] given Functor[T] = the[Functor[T]]
